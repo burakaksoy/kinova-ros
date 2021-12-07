@@ -37,6 +37,8 @@ import general_robotics_toolbox as rox
 import math
 # from math import pi, sin,cos,atan2
 
+import tf.transformations
+
 class CartesianForcePublisher():
     def __init__(self):
         rospy.init_node('cartesian_force_publisher', anonymous=True)
@@ -143,7 +145,8 @@ class CartesianForcePublisher():
 
         # Calculate current end effector pose wrt base
         T = rox.fwdkin(self.kinova,q)
-        rospy.loginfo("Current End Effector pose in base frame [R|P]: " + str(T))
+        rospy.loginfo("Current End Effector position in base frame [P|R]:\n" + str(T[:3,3]))
+        rospy.loginfo("Current End Effector orientation XYZ euler angles in base frame [R]: " + str(tf.transformations.euler_from_matrix(T,axes='sxyz')))
 
         # Calculate current end effector velocity wrt base
         V = J.dot(q_dot)
