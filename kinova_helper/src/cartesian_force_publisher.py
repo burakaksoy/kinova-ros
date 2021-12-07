@@ -106,6 +106,9 @@ class CartesianForcePublisher():
         self.joint_upper_limits = np.radians([10000,310,341,10000,10000,10000])
         self.joint_lower_limits = np.radians([-10000,50,19,-10000,-10000,-10000])
 
+        # Joint angles in Zero config 
+        self.q_zero = np.deg2rad(np.array([180,270,90,180,180,0]))
+
         # Create the kinova robot object with the general robotics toolbox
         self.kinova = rox.Robot(self.H,
                                 self.P,
@@ -120,7 +123,7 @@ class CartesianForcePublisher():
         joint_state_msg.name # list of joint names, 12 elements, last 6 are for the fingers
         
         # Get current joint angles (rad)
-        q = np.array(joint_state_msg.position[:6]) # joint angles in radian (12 elements, 6 are needed)
+        q = np.array(joint_state_msg.position[:6]) - self.q_zero # joint angles in radian (12 elements, 6 are needed)
         # Get current joint velocities (rad/s)
         q_dot = np.array(joint_state_msg.velocity[:6]) # joint velocity in radian/s (12 elements, 6 are needed)
         # Get current joint torques (Nm)
