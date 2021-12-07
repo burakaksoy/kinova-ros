@@ -103,8 +103,10 @@ class CartesianForcePublisher():
 
         # Parameters to create the robot object properly
         self.joint_types = np.array([0,0,0,0,0,0]) # All revolute
-        self.joint_upper_limits = np.radians([10000,310,341,10000,10000,10000])
-        self.joint_lower_limits = np.radians([-10000,50,19,-10000,-10000,-10000])
+        # self.joint_upper_limits = np.radians([10000,310,341,10000,10000,10000])
+        # self.joint_lower_limits = np.radians([-10000,50,19,-10000,-10000,-10000])
+        self.joint_upper_limits = None
+        self.joint_lower_limits = None
 
         # Joint angles in Zero config 
         self.q_zero = np.deg2rad(np.array([180,270,90,180,180,0]))
