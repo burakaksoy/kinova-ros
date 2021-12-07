@@ -146,7 +146,7 @@ class CartesianForcePublisher():
         # Calculate current end effector pose wrt base
         T = rox.fwdkin(self.kinova,q)
         rospy.loginfo("Current End Effector position in base frame [P|R]:\n" + str(T))
-        rospy.loginfo("Current End Effector orientation XYZ euler angles in base frame [R]: " + str(tf.transformations.euler_from_matrix(T,axes='sxyz')))
+        rospy.loginfo("Current End Effector orientation XYZ euler angles in base frame [R]: " + str(tf.transformations.euler_from_matrix(T.R,axes='sxyz')))
 
         # Calculate current end effector velocity wrt base
         V = J.dot(q_dot)
