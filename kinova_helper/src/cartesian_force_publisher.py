@@ -90,8 +90,9 @@ class CartesianForcePublisher():
         P23 = (self.D2)*self.ex + (self.e2)*self.ey
         P34 = 0*self.ez
         P45 = (self.d5b*self.ca)*self.ey - (self.d5b*self.sa + self.d4b)*self.ez
-        P56 = (self.d6b*self.ca)*self.ey + (self.d6b*self.sa)*self.ez 
-        self.P = np.array([P01, P12, P23, P34, P45, P56]).T
+        P56 = 0*self.ez 
+        P6e = (self.d6b*self.ca)*self.ey + (self.d6b*self.sa)*self.ez 
+        self.P = np.array([P01, P12, P23, P34, P45, P56, P6e]).T
 
         # Tool frame (end effector) adjustment 
         self.p_tool = 0*self.ez
