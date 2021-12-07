@@ -45,7 +45,7 @@ class CartesianForcePublisher():
         self.tool_wrench_topic_name = rospy.get_param("~tool_wrench_topic_name", "j2n6s300_tool_wrench_effective")
 
         # Publisher
-        self.pub_wrench_stamped = rospy.Publisher(self.joint_state_topic_name, geometry_msgs.msg.WrenchStamped, queue_size=1)
+        self.pub_wrench_stamped = rospy.Publisher(self.tool_wrench_topic_name, geometry_msgs.msg.WrenchStamped, queue_size=1)
 
         # Topic name to subsribe
         self.joint_state_topic_name = rospy.get_param("~joint_state_topic_name", "j2n6s300_driver/out/joint_state")
