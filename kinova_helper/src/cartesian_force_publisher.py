@@ -135,22 +135,25 @@ class CartesianForcePublisher():
 
         # Calculate the current Jacobian of end effector wrt base
         J = rox.robotjacobian(self.kinova,q)
-        rospy.loginfo("Current Jacbian: " + str(J))
+        # rospy.loginfo("Current Jacobian: " + str(J))
+
+        # TODO: put a warning if the jacobian is near singularity
+
 
         # Calculate the current end effector forces (wrench) wrt base
         Ftip = np.linalg.pinv(J.T).dot(tau)
-        rospy.loginfo("Current F_tip [Tau;F]: " + str(Ftip))
+        # rospy.loginfo("Current F_tip [Tau;F]: " + str(Ftip))
 
         self.publishWrenchStamped(joint_state_msg.header, Ftip)
 
-        # Calculate current end effector pose wrt base
-        T = rox.fwdkin(self.kinova,q)
-        rospy.loginfo("Current End Effector position in base frame [P|R]:\n" + str(T))
-        rospy.loginfo("Current End Effector orientation XYZ euler angles in base frame [z,y,x]: " + str(tf.transformations.euler_from_matrix(T.R,axes='szyx')))
+        # # Calculate current end effector pose wrt base
+        # T = rox.fwdkin(self.kinova,q)
+        # rospy.loginfo("Current End Effector position in base frame [P|R]:\n" + str(T))
+        # rospy.loginfo("Current End Effector orientation XYZ euler angles in base frame [z,y,x]: " + str(tf.transformations.euler_from_matrix(T.R,axes='szyx')))
 
-        # Calculate current end effector velocity wrt base
-        V = J.dot(q_dot)
-        rospy.loginfo("Current End Effector velocity in base frame [w;v]: " + str(V))
+        # # Calculate current end effector velocity wrt base
+        # V = J.dot(q_dot)
+        # rospy.loginfo("Current End Effector velocity in base frame [w;v]: " + str(V))
 
 
 
