@@ -168,9 +168,8 @@ class KinovaHelperPublisher():
         wrench_stamped_msg.header = header
         wrench_stamped_msg.header.frame_id = self.tf_prefix_ + "link_base"
 
-        rospy.loginfo("Added delay: " + str())
-        now = rospy.Time.now()
-        rospy.loginfo("WRENCH: Added time delay %i secs %i nsecs", (now.secs - header.stamp.secs), (now.nsecs -header.stamp.nsecs))
+        # now = rospy.Time.now()
+        # rospy.loginfo("WRENCH: Added time delay %i secs %i nsecs", (now.secs - header.stamp.secs), (now.nsecs -header.stamp.nsecs))
         
         wrench_stamped_msg.wrench.force.x = wrench[3]
         wrench_stamped_msg.wrench.force.y = wrench[4]
