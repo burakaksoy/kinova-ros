@@ -59,7 +59,7 @@ class KinovaHelperPublisher():
         self.joint_state_topic_name = rospy.get_param("~joint_state_topic_name", self.kinova_robotName + "_driver/out/joint_state")
 
         # Subscriber
-        rospy.Subscriber(self.joint_state_topic_name, sensor_msgs.msg.JointState, self.joint_state_callback , queue_size=1)
+        rospy.Subscriber(self.joint_state_topic_name, sensor_msgs.msg.JointState, self.joint_state_callback , queue_size=0)
 
         # Kinova arm link lengths
         self.D1 = rospy.get_param("~D1", 0.2755)
