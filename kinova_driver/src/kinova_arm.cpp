@@ -190,22 +190,22 @@ KinovaArm::KinovaArm(KinovaComm &arm, const ros::NodeHandle &nodeHandle, const s
              &KinovaArm::setTorqueControlParametersService,this);
 
     /* Set up Publishers */
-    joint_angles_publisher_ = node_handle_.advertise<kinova_msgs::JointAngles>
-            ("out/joint_angles", 2);
+    // joint_angles_publisher_ = node_handle_.advertise<kinova_msgs::JointAngles>
+    //         ("out/joint_angles", 2);
     joint_torque_publisher_ = node_handle_.advertise<kinova_msgs::JointAngles>
-            ("out/joint_torques", 2);
+            ("out/joint_torques_raw", 2);
     joint_state_publisher_ = node_handle_.advertise<sensor_msgs::JointState>
             ("out/joint_state", 2);
-    tool_position_publisher_ = node_handle_.advertise<geometry_msgs::PoseStamped>
-            ("out/tool_pose", 2);
-    tool_wrench_publisher_ = node_handle_.advertise<geometry_msgs::WrenchStamped>
-            ("out/tool_wrench", 2);
-    finger_position_publisher_ = node_handle_.advertise<kinova_msgs::FingerPosition>
-            ("out/finger_position", 2);
+    // tool_position_publisher_ = node_handle_.advertise<geometry_msgs::PoseStamped>
+    //         ("out/tool_pose", 2);
+    // tool_wrench_publisher_ = node_handle_.advertise<geometry_msgs::WrenchStamped>
+    //         ("out/tool_wrench", 2);
+    // finger_position_publisher_ = node_handle_.advertise<kinova_msgs::FingerPosition>
+    //         ("out/finger_position", 2);
 
     // Publish last command for relative motion (read current position cause arm drop)
-    joint_command_publisher_ = node_handle_.advertise<kinova_msgs::JointAngles>("out/joint_command", 2);
-    cartesian_command_publisher_ = node_handle_.advertise<kinova_msgs::KinovaPose>("out/cartesian_command", 2);
+    // joint_command_publisher_ = node_handle_.advertise<kinova_msgs::JointAngles>("out/joint_command", 2);
+    // cartesian_command_publisher_ = node_handle_.advertise<kinova_msgs::KinovaPose>("out/cartesian_command", 2);
 
     /* Set up Subscribers*/
     joint_velocity_subscriber_ = node_handle_.subscribe("in/joint_velocity", 1,
@@ -581,9 +581,9 @@ void KinovaArm::publishJointAngles(void)
     kinova_comm_.getJointAngles(current_angles);
     kinova_msgs::JointAngles kinova_angles = current_angles.constructAnglesMsg();
 
-    AngularPosition joint_command;
-    kinova_comm_.getAngularCommand(joint_command);
-    kinova_msgs::JointAngles joint_command_msg = KinovaAngles(joint_command.Actuators).constructAnglesMsg();
+    // AngularPosition joint_command;
+    // kinova_comm_.getAngularCommand(joint_command);
+    // kinova_msgs::JointAngles joint_command_msg = KinovaAngles(joint_command.Actuators).constructAnglesMsg();
 
     sensor_msgs::JointState joint_state;
     joint_state.name = joint_names_;
@@ -665,14 +665,17 @@ void KinovaArm::publishJointAngles(void)
 
 
     // Joint torques (effort)
-    KinovaAngles joint_tqs;
-    bool gravity_comp;
-    node_handle_.param("torque_parameters/publish_torque_with_gravity_compensation", gravity_comp, false);
-    if (gravity_comp==true)
-      kinova_comm_.getGravityCompensatedTorques(joint_tqs);
-    else
-      kinova_comm_.getJointTorques(joint_tqs);
-    joint_torque_publisher_.publish(joint_tqs.constructAnglesMsg());
+    // KinovaAngles joint_tqs;
+    // bool gravity_comp;
+    // node_handle_.param("torque_parameters/publish_torque_with_gravity_compensation", gravity_comp, false);
+    // if (gravity_comp==true)
+    //   kinova_comm_.getGravityCompensatedTorques(joint_tqs);
+    // else
+    //   kinova_comm_.getJointTorques(joint_tqs);
+
+    // Publish joint torques both with and without gravity compensation
+    KinovaAngles joint_tqs; // gravity_compensated
+    kinova_comm_.getGravityCompensatedTorques(joint_tqs);
 
     joint_state.effort.resize(joint_total_number_);
     joint_state.effort[0] = joint_tqs.Actuator1;
@@ -693,10 +696,13 @@ void KinovaArm::publishJointAngles(void)
         joint_state.effort[6] = joint_tqs.Actuator7;
     }
 
-    joint_angles_publisher_.publish(kinova_angles);
-    joint_command_publisher_.publish(joint_command_msg);
+    // joint_angles_publisher_.publish(kinova_angles);
+    // joint_command_publisher_.publish(joint_command_msg);
     joint_state_publisher_.publish(joint_state);
 
+    // KinovaAngles joint_tqs_raw; // raw  
+    // kinova_comm_.getJointTorques(joint_tqs_raw);
+    // joint_torque_publisher_.publish(joint_tqs_raw.constructAnglesMsg());
 }
 
 /*!
@@ -709,16 +715,16 @@ void KinovaArm::publishToolPosition(void)
     kinova_comm_.getCartesianPosition(pose);
 
 
-    CartesianPosition cartesian_command;
-    kinova_comm_.getCartesianCommand(cartesian_command);
-    kinova_msgs::KinovaPose cartesian_command_msg = KinovaPose(cartesian_command.Coordinates).constructKinovaPoseMsg();
+    // CartesianPosition cartesian_command;
+    // kinova_comm_.getCartesianCommand(cartesian_command);
+    // kinova_msgs::KinovaPose cartesian_command_msg = KinovaPose(cartesian_command.Coordinates).constructKinovaPoseMsg();
 
     current_position.pose            = pose.constructPoseMsg();
     current_position.header.stamp    = ros::Time::now();
     current_position.header.frame_id = tf_prefix_ + "link_base";
 
     tool_position_publisher_.publish(current_position);
-    cartesian_command_publisher_.publish(cartesian_command_msg);
+    // cartesian_command_publisher_.publish(cartesian_command_msg);
 }
 
 /*!
@@ -759,9 +765,9 @@ void KinovaArm::publishFingerPosition(void)
 void KinovaArm::statusTimer(const ros::TimerEvent&)
 {
     publishJointAngles();
-    publishToolPosition();
-    publishToolWrench();
-    publishFingerPosition();
+    // publishToolPosition();
+    // publishToolWrench();
+    // publishFingerPosition();
 }
 
 }  // namespace kinova
