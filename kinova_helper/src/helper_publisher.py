@@ -2,22 +2,23 @@
 
 """
 Author: Burak Aksoy
-Node: cartesian_force_publisher
+Node: kinova_helper_publisher
 Description:
     By reading joint_states topic, which has the current joint angles of the 
     kinova arm and joint efforts as the torques applied by the joints of the 
-    kinova arm, calculates and publishes the effective end effector forces (wrench).
+    kinova arm, calculates and publishes the effective end effector forces (wrench)
+    and the end effector pose.
 Motivation:
-    This helper is implemented because the tool_wrench values are wrong in the original 
-    topic: /j2n6s300_driver/out/tool_wrench due to a bug in the API which gives the wrong torque
-    values of the joints
+    
 Parameters:
     - The j2n6s300 kinova arm's link lengths
     - Topic names to subscribe and publish
+    - Robot name
 Subscribes to:
     - /j2n6s300_driver/out/joint_state (sensor_msgs::JointState)
 Publishes to:
-    - /j2n6s300_tool_wrench_effective (geometry_msgs::WrenchStamped)
+    - /j2n6s300_tool_wrench (geometry_msgs::WrenchStamped) (wrt base)
+    - /j2n6s300_tool_pose (geometry_msgs::PoseStamped) (wrt base)
 Broadcasts to:
     - 
 """
@@ -39,18 +40,23 @@ import math
 
 import tf.transformations
 
-class CartesianForcePublisher():
+class KinovaHelperPublisher():
     def __init__(self):
-        rospy.init_node('cartesian_force_publisher', anonymous=True)
+        rospy.init_node('kinova_helper_publisher', anonymous=True)
+
+        self.kinova_robotName = rospy.get_param("~kinova_robotName", "j2n6s300")
+        self.tf_prefix_ = self.kinova_robotName + "_";
 
         # Topic name to publish
-        self.tool_wrench_topic_name = rospy.get_param("~tool_wrench_topic_name", "j2n6s300_tool_wrench_effective")
+        self.tool_wrench_topic_name = rospy.get_param("~tool_wrench_topic_name", "out_custom/tool_wrench")
+        self.tool_pose_topic_name = rospy.get_param("~tool_wrench_topic_name", "out_custom/tool_pose")
 
         # Publisher
-        self.pub_wrench_stamped = rospy.Publisher(self.tool_wrench_topic_name, geometry_msgs.msg.WrenchStamped, queue_size=1)
+        self.pub_tool_wrench_stamped = rospy.Publisher(self.tool_wrench_topic_name, geometry_msgs.msg.WrenchStamped, queue_size=2)
+        self.pub_tool_pose_stamped = rospy.Publisher(self.tool_pose_topic_name, geometry_msgs.msg.PoseStamped, queue_size=2)
 
         # Topic name to subsribe
-        self.joint_state_topic_name = rospy.get_param("~joint_state_topic_name", "j2n6s300_driver/out/joint_state")
+        self.joint_state_topic_name = rospy.get_param("~joint_state_topic_name", self.kinova_robotName + "_driver/out/joint_state")
 
         # Subscriber
         rospy.Subscriber(self.joint_state_topic_name, sensor_msgs.msg.JointState, self.joint_state_callback , queue_size=1)
@@ -143,13 +149,13 @@ class CartesianForcePublisher():
         # Calculate the current end effector forces (wrench) wrt base
         Ftip = np.linalg.pinv(J.T).dot(tau)
         # rospy.loginfo("Current F_tip [Tau;F]: " + str(Ftip))
-
         self.publishWrenchStamped(joint_state_msg.header, Ftip)
 
-        # # Calculate current end effector pose wrt base
-        # T = rox.fwdkin(self.kinova,q)
+        # Calculate current end effector pose wrt base
+        T = rox.fwdkin(self.kinova,q)
         # rospy.loginfo("Current End Effector position in base frame [P|R]:\n" + str(T))
         # rospy.loginfo("Current End Effector orientation XYZ euler angles in base frame [z,y,x]: " + str(tf.transformations.euler_from_matrix(T.R,axes='szyx')))
+        self.publishPoseStamped(joint_state_msg.header, T.p, rox.R2q(T.R))
 
         # # Calculate current end effector velocity wrt base
         # V = J.dot(q_dot)
@@ -160,6 +166,8 @@ class CartesianForcePublisher():
     def publishWrenchStamped(self, header, wrench):
         wrench_stamped_msg = geometry_msgs.msg.WrenchStamped()
         wrench_stamped_msg.header = header
+        wrench_stamped_msg.header.frame_id = self.tf_prefix_ + "link_base"
+        
         wrench_stamped_msg.wrench.force.x = wrench[3]
         wrench_stamped_msg.wrench.force.y = wrench[4]
         wrench_stamped_msg.wrench.force.z = wrench[5]
@@ -167,10 +175,27 @@ class CartesianForcePublisher():
         wrench_stamped_msg.wrench.torque.y = wrench[1]
         wrench_stamped_msg.wrench.torque.z = wrench[2]
 
-        self.pub_wrench_stamped.publish(wrench_stamped_msg)
+        self.pub_tool_wrench_stamped.publish(wrench_stamped_msg)
+
+    def publishPoseStamped(self, header, position, orientation):
+        pose_stamped_msg = geometry_msgs.msg.PoseStamped()
+        pose_stamped_msg.header = header
+        pose_stamped_msg.header.frame_id = self.tf_prefix_ + "link_base"
+
+        pose_stamped_msg.pose.position.x = position[0]
+        pose_stamped_msg.pose.position.y = position[1]
+        pose_stamped_msg.pose.position.z = position[2]
+        
+        pose_stamped_msg.pose.orientation.w = orientation[0]
+        pose_stamped_msg.pose.orientation.x = orientation[1]
+        pose_stamped_msg.pose.orientation.y = orientation[2]
+        pose_stamped_msg.pose.orientation.z = orientation[3]
+        
+
+        self.pub_tool_pose_stamped.publish(pose_stamped_msg)
 
 
 
 if __name__ == '__main__':
-    cartesianForcePublisher = CartesianForcePublisher()
+    kinovaHelperPublisher = KinovaHelperPublisher()
     rospy.spin()
