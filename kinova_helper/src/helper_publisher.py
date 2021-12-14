@@ -44,8 +44,8 @@ class KinovaHelperPublisher():
     def __init__(self):
         rospy.init_node('kinova_helper_publisher', anonymous=True)
 
-        self.kinova_robotName = rospy.get_param("~kinova_robotName", "j2n6s300")
-        self.tf_prefix_ = self.kinova_robotName + "_";
+        self.kinova_robotName = rospy.get_param("~robot_name", "j2n6s300")
+        self.tf_prefix_ = self.kinova_robotName + "_"
 
         # Topic name to publish
         self.tool_wrench_topic_name = rospy.get_param("~tool_wrench_topic_name", "out_custom/tool_wrench")
