@@ -63,9 +63,9 @@ class KinovaWrenchFilter():
         
         # Apply deadzones
         for i in range(3):
-            if abs(wrench[i]< self.torque_dead_zone_thres):
+            if abs(wrench[i]) < self.torque_dead_zone_thres:
                 wrench[i] = 0.0
-            if abs(wrench[i+3]< self.force_dead_zone_thres):
+            if abs(wrench[i+3]) < self.force_dead_zone_thres:
                 wrench[i+3] = 0.0
 
         # Apply lowpass filter
