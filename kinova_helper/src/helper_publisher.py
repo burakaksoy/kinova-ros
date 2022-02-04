@@ -49,7 +49,7 @@ class KinovaHelperPublisher():
 
         # Topic name to publish
         self.tool_wrench_topic_name = rospy.get_param("~tool_wrench_topic_name", "out_custom/tool_wrench")
-        self.tool_pose_topic_name = rospy.get_param("~tool_wrench_topic_name", "out_custom/tool_pose")
+        self.tool_pose_topic_name = rospy.get_param("~tool_pose_topic_name", "out_custom/tool_pose")
 
         # Publisher
         self.pub_tool_wrench_stamped = rospy.Publisher(self.tool_wrench_topic_name, geometry_msgs.msg.WrenchStamped, queue_size=2)
