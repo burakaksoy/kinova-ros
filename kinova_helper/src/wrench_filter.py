@@ -42,7 +42,7 @@ class KinovaWrenchFilter():
         # Topic name to subsribe
         self.tool_wrench_topic_name_in = rospy.get_param("~tool_wrench_topic_name_in", "tool_wrench_raw")
         # Subscriber
-        rospy.Subscriber(self.joint_state_topic_name, geometry_msgs.msg.WrenchStamped, self.wrench_callback , queue_size=None)
+        rospy.Subscriber(self.tool_wrench_topic_name_in, geometry_msgs.msg.WrenchStamped, self.wrench_callback , queue_size=None)
 
         # Get deadzone and low-pass filter parameters
         self.wrench_filter_factor = rospy.get_param("~wrench_filter_factor", 0.1)
