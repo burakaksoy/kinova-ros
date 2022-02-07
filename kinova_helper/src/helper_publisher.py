@@ -151,7 +151,7 @@ class KinovaHelperPublisher():
         min_sing_val = np.linalg.svd(J, compute_uv=False)[-1] # Minimum singular value of the jacobian
         min_sing_val_msg = std_msgs.msg.Float64()
         min_sing_val_msg.data = min_sing_val
-        self.pub_min_singular_value(min_sing_val_msg)
+        self.pub_min_singular_value.publish(min_sing_val_msg)
 
         # Calculate the current end effector forces (wrench) wrt base
         Ftip = np.linalg.pinv(J.T).dot(tau)
