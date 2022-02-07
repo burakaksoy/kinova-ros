@@ -29,6 +29,7 @@ import numpy as np
 
 import sensor_msgs.msg
 import geometry_msgs.msg 
+import std_msgs.msg
 # from geometry_msgs.msg import WrenchStamped
 
 # import kinova_msgs.msg
@@ -54,6 +55,9 @@ class KinovaHelperPublisher():
         # Publisher
         self.pub_tool_wrench_stamped = rospy.Publisher(self.tool_wrench_topic_name, geometry_msgs.msg.WrenchStamped, queue_size=2)
         self.pub_tool_pose_stamped = rospy.Publisher(self.tool_pose_topic_name, geometry_msgs.msg.PoseStamped, queue_size=2)
+        # Minimum singular value publisher for debug
+        self.min_singular_value_topic_name = rospy.get_param("~min_singular_value_topic_name", "min_singular_value")
+        self.pub_min_singular_value = rospy.Publisher(self.min_singular_value_topic_name, std_msgs.msg.Float64, queue_size=2)
 
         # Topic name to subsribe
         self.joint_state_topic_name = rospy.get_param("~joint_state_topic_name", self.kinova_robotName + "_driver/out/joint_state")
@@ -144,7 +148,10 @@ class KinovaHelperPublisher():
         # rospy.loginfo("Current Jacobian: " + str(J))
 
         # TODO: put a warning if the jacobian is near singularity
-
+        min_sing_val = np.linalg.svd(J, compute_uv=False)[-1] # Minimum singular value of the jacobian
+        min_sing_val_msg = std_msgs.msg.Float64()
+        min_sing_val_msg.data = min_sing_val
+        self.pub_min_singular_value(min_sing_val_msg)
 
         # Calculate the current end effector forces (wrench) wrt base
         Ftip = np.linalg.pinv(J.T).dot(tau)
