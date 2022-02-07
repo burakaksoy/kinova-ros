@@ -58,6 +58,7 @@ class KinovaHelperPublisher():
         # Minimum singular value publisher for debug
         self.min_singular_value_topic_name = rospy.get_param("~min_singular_value_topic_name", "min_singular_value")
         self.pub_min_singular_value = rospy.Publisher(self.min_singular_value_topic_name, std_msgs.msg.Float64, queue_size=2)
+        self.min_singular_value_thres = rospy.get_param("~min_singular_value_thres", 0.8)
 
         # Topic name to subsribe
         self.joint_state_topic_name = rospy.get_param("~joint_state_topic_name", self.kinova_robotName + "_driver/out/joint_state")
@@ -147,11 +148,13 @@ class KinovaHelperPublisher():
         J = rox.robotjacobian(self.kinova,q)
         # rospy.loginfo("Current Jacobian: " + str(J))
 
-        # TODO: put a warning if the jacobian is near singularity
+        # put a warning if the jacobian is near singularity
         min_sing_val = np.linalg.svd(J, compute_uv=False)[-1] # Minimum singular value of the jacobian
         min_sing_val_msg = std_msgs.msg.Float64()
         min_sing_val_msg.data = min_sing_val
         self.pub_min_singular_value.publish(min_sing_val_msg)
+        if min_sing_val <= self.min_singular_value_thres:
+            rospy.logwarn("Jacobian minimum signular value is less than the threshold value: " + str(self.min_singular_value_thres) + "!!!")
 
         # Calculate the current end effector forces (wrench) wrt base
         Ftip = np.linalg.pinv(J.T).dot(tau)
