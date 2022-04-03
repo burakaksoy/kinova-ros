@@ -52,11 +52,11 @@ def argumentParser(argument):
 def ZeroTorque():
     #move robot to candle like pose
 
-    print("torque before setting zero")
-    topic_name = '/' + prefix + 'driver/out/joint_torques'
-    sub_once = rospy.Subscriber(topic_name, kinova_msgs.msg.JointAngles, printTorqueVaules) 
-    rospy.wait_for_message(topic_name, kinova_msgs.msg.JointAngles, timeout=2)
-    sub_once.unregister()
+    # print("torque before setting zero")
+    # topic_name = '/' + prefix + 'driver/out/joint_torques'
+    # sub_once = rospy.Subscriber(topic_name, kinova_msgs.msg.JointAngles, printTorqueVaules) 
+    # rospy.wait_for_message(topic_name, kinova_msgs.msg.JointAngles, timeout=2)
+    # sub_once.unregister()
     
     #call zero torque
     service_address = '/' + prefix + 'driver/in/set_zero_torques'
@@ -68,11 +68,11 @@ def ZeroTorque():
         print ("Service call failed: zero torque")
         return None	
     
-    rospy.sleep(0.5)
-    print ("torque after setting zero")
-    sub_once = rospy.Subscriber(topic_name, kinova_msgs.msg.JointAngles, printTorqueVaules) 
-    rospy.wait_for_message(topic_name, kinova_msgs.msg.JointAngles, timeout=2)
-    sub_once.unregister()
+    # rospy.sleep(0.5)
+    # print ("torque after setting zero")
+    # sub_once = rospy.Subscriber(topic_name, kinova_msgs.msg.JointAngles, printTorqueVaules) 
+    # rospy.wait_for_message(topic_name, kinova_msgs.msg.JointAngles, timeout=2)
+    # sub_once.unregister()
 
 def runCOMParameterEstimation():
     service_address = '/' + prefix + 'driver/in/run_COM_parameters_estimation'
@@ -84,10 +84,10 @@ def runCOMParameterEstimation():
         print ("Service call failed: runCOMParameterEstimation")
         return None	
 
-def printTorqueVaules(torques):
-    print ("Torque - {}, {}, {}, {}, {}, {}, {}".format(torques.joint1, 
-    torques.joint2, torques.joint3, torques.joint4, 
-    torques.joint5, torques.joint6, torques.joint7))
+# def printTorqueVaules(torques):
+#     print ("Torque - {}, {}, {}, {}, {}, {}, {}".format(torques.joint1, 
+#     torques.joint2, torques.joint3, torques.joint4, 
+#     torques.joint5, torques.joint6, torques.joint7))
 
 if __name__ == '__main__':
     try:        
