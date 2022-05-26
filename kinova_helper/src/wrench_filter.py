@@ -58,7 +58,7 @@ class KinovaWrenchFilter():
         self.wrench = np.zeros(6) # variable to store previous wrench value for low-pass filter
 
     def wrench_callback(self,wrench_stamped_msg):
-        # Take negative of the read wrench bcs we want to find the external wrench, not the one that robot applied
+        # Take negative of the read wrench bcs we want to find the external wrench, not the one that robot applies
         wrench = -np.array([wrench_stamped_msg.wrench.torque.x, wrench_stamped_msg.wrench.torque.y, wrench_stamped_msg.wrench.torque.z,
                             wrench_stamped_msg.wrench.force.x, wrench_stamped_msg.wrench.force.y, wrench_stamped_msg.wrench.force.z])
         
