@@ -145,12 +145,14 @@ class KinovaHelperPublisher():
         # Get current joint torques (Nm)
         tau = np.array(joint_state_msg.effort[:6]) # joint torques in Nm (12 elements, 6 are needed)
 
+        rospy.logwarn(str(tau) + " before tau !!!")
         # Apply deadzones for joint torques
         for i in range(6):
-            rospy.logwarn(str(self.joint_torque_dead_zone_thres) + " !!!")
+            # rospy.logwarn(str(self.joint_torque_dead_zone_thres) + " !!!")
             if abs(tau[i]) < self.joint_torque_dead_zone_thres[i]:
-                rospy.logwarn(str(i) + "index corrected !!!")
+                # rospy.logwarn(str(i) + "index corrected !!!")
                 tau[i] = 0.0
+        rospy.logwarn(str(tau) + " after tau !!!")
 
         # Calculate the current Jacobian of end effector wrt base
         J = rox.robotjacobian(self.kinova,q)
