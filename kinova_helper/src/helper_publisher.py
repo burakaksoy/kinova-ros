@@ -147,6 +147,7 @@ class KinovaHelperPublisher():
 
         # Apply deadzones for joint torques
         for i in range(6):
+            rospy.logwarn(str(self.joint_torque_dead_zone_thres[i]) + "!!!")
             if abs(tau[i]) < self.joint_torque_dead_zone_thres[i]:
                 tau[i] = 0.0
 
