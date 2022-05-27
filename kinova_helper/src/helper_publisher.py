@@ -59,7 +59,7 @@ class KinovaHelperPublisher():
         self.min_singular_value_topic_name = rospy.get_param("~min_singular_value_topic_name", "min_singular_value")
         self.pub_min_singular_value = rospy.Publisher(self.min_singular_value_topic_name, std_msgs.msg.Float64, queue_size=2)
         self.min_singular_value_thres = rospy.get_param("~min_singular_value_thres", 0.8)
-        self.joint_torque_dead_zone_thres = rospy.get_param("~joint_torque_dead_zone_thres", 0.5) # Nm
+        self.joint_torque_dead_zone_thres = rospy.get_param("~joint_torque_dead_zone_thres", [0.1,0.1,0.1, 0.05,0.05,0.05]) # Nm
 
         # Topic name to subsribe
         self.joint_state_topic_name = rospy.get_param("~joint_state_topic_name", self.kinova_robotName + "_driver/out/joint_state")
@@ -147,7 +147,7 @@ class KinovaHelperPublisher():
 
         # Apply deadzones for joint torques
         for i in range(6):
-            if abs(tau[i]) < self.joint_torque_dead_zone_thres:
+            if abs(tau[i]) < self.joint_torque_dead_zone_thres[i]:
                 tau[i] = 0.0
 
         # Calculate the current Jacobian of end effector wrt base
