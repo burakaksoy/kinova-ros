@@ -1,6 +1,6 @@
 <launch>
 	<arg name="kinova_robotType" default="j2n6s300" />
-	<param name="robot_description" command="$(find xacro)/xacro '$(find assistive_launch)/urdf/oarbot_silver_$(arg kinova_robotType)_standalone.xacro'" />
+	<param name="robot_description" command="$(find xacro)/xacro '$(find assistive_launch)/urdf/oarbot_silver_$(arg kinova_robotType)_standalone_with_ft.xacro'" />
 	<node name="joint_state_publisher_gui" pkg="joint_state_publisher_gui" type="joint_state_publisher_gui">
 		<param name="zeros/$(arg kinova_robotType)_joint_2" value="3.1415"/>
 		<param name="zeros/$(arg kinova_robotType)_joint_3" value="3.1415"/>
@@ -15,4 +15,3 @@
     type="rviz"
     args="-d $(find kinova_description)/config/display_kinova.rviz" />
 </launch>
-
