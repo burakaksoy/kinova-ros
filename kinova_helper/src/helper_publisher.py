@@ -59,8 +59,8 @@ class KinovaHelperPublisher():
         self.min_singular_value_topic_name = rospy.get_param("~min_singular_value_topic_name", "min_singular_value")
         self.pub_min_singular_value = rospy.Publisher(self.min_singular_value_topic_name, std_msgs.msg.Float64, queue_size=2)
         self.min_singular_value_thres = rospy.get_param("~min_singular_value_thres", 0.8)
-        # self.joint_torque_dead_zone_thres = rospy.get_param("~joint_torque_dead_zone_thres") # Nm
-        self.joint_torque_dead_zone_thres = [1.2,1.2,1.2, 0.6,0.6,0.6]
+        self.joint_torque_dead_zone_thres = rospy.get_param("~joint_torque_dead_zone_thres") # Nm
+        # self.joint_torque_dead_zone_thres = [1.2,1.2,1.2, 0.6,0.6,0.6]
 
         # Topic name to subsribe
         self.joint_state_topic_name = rospy.get_param("~joint_state_topic_name", self.kinova_robotName + "_driver/out/joint_state")
