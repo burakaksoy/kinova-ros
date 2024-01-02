@@ -41,9 +41,13 @@ import math
 
 import tf.transformations
 
+from rospy_log_controller import LogController
+
 class KinovaHelperPublisher():
     def __init__(self):
         rospy.init_node('kinova_helper_publisher', anonymous=True)
+
+        self.logger = LogController() # To Manage the maximum rate of rospy log data
 
         self.kinova_robotName = rospy.get_param("~robot_name", "j2n6s300")
         self.tf_prefix_ = self.kinova_robotName + "_"
@@ -161,7 +165,11 @@ class KinovaHelperPublisher():
         min_sing_val_msg.data = min_sing_val
         self.pub_min_singular_value.publish(min_sing_val_msg)
         if min_sing_val <= self.min_singular_value_thres:
-            rospy.logwarn("Jacobian minimum signular value is less than the threshold value: " + str(self.min_singular_value_thres) + "!!!")
+            msg = "Jacobian minimum signular value is less than the threshold value: " + str(self.min_singular_value_thres) + "!!!"
+            # rospy.logwarn(msg)
+            self.logger.log(msg,
+                            log_type='warning', 
+                            min_period=1.0) 
 
         # Calculate the current end effector forces (wrench) wrt base
         Ftip = np.linalg.pinv(J.T).dot(tau)
