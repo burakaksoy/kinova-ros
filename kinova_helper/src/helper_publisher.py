@@ -163,7 +163,7 @@ class KinovaHelperPublisher():
         if min_sing_val <= self.min_singular_value_thres:
             msg = "Jacobian minimum signular value is less than the threshold value: " + str(self.min_singular_value_thres) + "!!!"
             # rospy.logwarn(msg)
-            rospy.logwarn_throttle(20.0, msg + ' (throttled 2.0s)')
+            rospy.logwarn_throttle(20.0, msg + ' (throttled 20.0s)')
 
         # Calculate the current end effector forces (wrench) wrt base
         Ftip = np.linalg.pinv(J.T).dot(tau)
